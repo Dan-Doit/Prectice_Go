@@ -2,20 +2,23 @@ package main
 
 import (
 	"fmt"
-	"log"
 
-	"github.com/Dan-Doit/prectice-go/bank"
+	"github.com/Dan-Doit/prectice-go/dicmap"
 )
 
 func main() {
-	account := bank.CreateAccount("Dan")
-	account.Deposit(1000)
-
-	err := account.Withdraw(100)
-
-	// err print then exit
+	dics := dicmap.Dicts{}
+	dics.AddDicts("Dan", "hi!")
+	dics.AddDicts("Adam", "Good!")
+	_, err := dics.UpdDicts("Con", "Good morning!")
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println(err)
 	}
-	fmt.Println(account)
+	_, err = dics.UpdDicts("Adam", "Good morning!")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	dics.DelDicts("Dan")
+	dics.Check("Dan")
 }
