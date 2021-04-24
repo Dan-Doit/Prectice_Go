@@ -19,33 +19,40 @@ var (
 		"https://www.fAsdasdasdasdbook.com",
 	}
 	errResFail = errors.New("Responce fail")
-	status     = make(map[string]string)
 )
 
+type requests struct {
+	url    string
+	status string
+}
+
 func Checker() {
-	state := "OK"
-	status := status
-	for _, url := range urls {
-		err := getResponse(url)
-		if err != nil {
-			state = "FAILED"
-		} else {
-			state = "OK"
-		}
-		status[url] = state
+
+	c := make(chan requests)
+	responses := make(map[string]string)
+
+	for _, v := range urls {
+		go getResponse(v, c)
 	}
-	fmt.Println("_______________________________________")
-	for k, v := range status {
-		fmt.Println(k, v)
+
+	for i := 0; i < len(urls); i++ {
+		result := <-c
+		responses[result.url] = result.status
+	}
+
+	for k, v := range responses {
+		fmt.Println(k+" status : ", v)
 	}
 }
 
-func getResponse(url string) error {
-	fmt.Println("Checking : ", url)
+func getResponse(url string, c chan requests) {
+
+	state := "OK"
+
 	res, err := http.Get(url)
 	if err != nil || res.StatusCode >= 400 {
-		return errResFail
-	} else {
-		return nil
+		state = "FAIL"
 	}
+
+	c <- requests{url: url, status: state}
 }
