@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/Dan-Doit/prectice-go/urlChecker"
+	"github.com/Dan-Doit/prectice-go/scrapper"
 )
 
 func main() {
-	urlChecker.Checker()
+	scrapper.Scrapper()
 }
