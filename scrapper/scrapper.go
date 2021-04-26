@@ -26,10 +26,16 @@ func Scrapper() {
 
 	arrJobsInfo := []jobsInfo{}
 
+	ch := make(chan []jobsInfo)
+
 	totalPages := getPages(baseURL)
 
 	for i := 0; i < totalPages; i++ {
-		arrJobsInfo = append(arrJobsInfo, getPage(i)...)
+		go getPage(i, ch)
+	}
+
+	for i := 0; i < totalPages; i++ {
+		arrJobsInfo = append(arrJobsInfo, <-ch...)
 	}
 
 	writeCSV(arrJobsInfo)
@@ -55,10 +61,10 @@ func writeCSV(jobs []jobsInfo) {
 	}
 }
 
-func getPage(page int) []jobsInfo {
+func getPage(page int, ch chan<- []jobsInfo) {
 
 	arrInfo := []jobsInfo{}
-
+	c := make(chan jobsInfo)
 	pageURL := baseURL + "&start=" + strconv.Itoa(page*10)
 	fmt.Println("Requesting now : ", pageURL)
 
@@ -73,21 +79,24 @@ func getPage(page int) []jobsInfo {
 	errChecker(err)
 
 	doc.Find(".jobsearch-SerpJobCard").Each(func(i int, card *goquery.Selection) {
-		result := exportJobs(card)
-		arrInfo = append(arrInfo, result)
+		go exportJobs(card, c)
 	})
 
-	return arrInfo
+	for i := 0; i < doc.Find(".jobsearch-SerpJobCard").Length(); i++ {
+		arrInfo = append(arrInfo, <-c)
+	}
+
+	ch <- arrInfo
 }
 
-func exportJobs(card *goquery.Selection) jobsInfo {
+func exportJobs(card *goquery.Selection, c chan<- jobsInfo) {
 	id, _ := card.Attr("data-jk")
 	title := cleanString(card.Find(".title>a").Text())
 	location := cleanString(card.Find(".sjcl").Text())
 	salary := cleanString(card.Find(".salaryText").Text())
 	summary := cleanString(card.Find(".summary").Text())
 
-	return jobsInfo{
+	c <- jobsInfo{
 		id:       id,
 		title:    title,
 		location: location,
