@@ -12,8 +12,6 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-var baseURL string = "https://kr.indeed.com/jobs?q=react&l=%EC%84%9C%EC%9A%B8"
-
 type jobsInfo struct {
 	id       string
 	title    string
@@ -22,7 +20,8 @@ type jobsInfo struct {
 	summary  string
 }
 
-func Scrapper() {
+func Scrapper(turm string) {
+	var baseURL string = "https://kr.indeed.com/jobs?q=" + turm + "&l=%EC%84%9C%EC%9A%B8"
 
 	arrJobsInfo := []jobsInfo{}
 
@@ -31,7 +30,7 @@ func Scrapper() {
 	totalPages := getPages(baseURL)
 
 	for i := 0; i < totalPages; i++ {
-		go getPage(i, ch)
+		go getPage(i, baseURL, ch)
 	}
 
 	for i := 0; i < totalPages; i++ {
@@ -61,7 +60,7 @@ func writeCSV(jobs []jobsInfo) {
 	}
 }
 
-func getPage(page int, ch chan<- []jobsInfo) {
+func getPage(page int, baseURL string, ch chan<- []jobsInfo) {
 
 	arrInfo := []jobsInfo{}
 	c := make(chan jobsInfo)
@@ -91,10 +90,10 @@ func getPage(page int, ch chan<- []jobsInfo) {
 
 func exportJobs(card *goquery.Selection, c chan<- jobsInfo) {
 	id, _ := card.Attr("data-jk")
-	title := cleanString(card.Find(".title>a").Text())
-	location := cleanString(card.Find(".sjcl").Text())
-	salary := cleanString(card.Find(".salaryText").Text())
-	summary := cleanString(card.Find(".summary").Text())
+	title := CleanString(card.Find(".title>a").Text())
+	location := CleanString(card.Find(".sjcl").Text())
+	salary := CleanString(card.Find(".salaryText").Text())
+	summary := CleanString(card.Find(".summary").Text())
 
 	c <- jobsInfo{
 		id:       id,
@@ -105,7 +104,7 @@ func exportJobs(card *goquery.Selection, c chan<- jobsInfo) {
 	}
 }
 
-func cleanString(str string) string {
+func CleanString(str string) string {
 	return strings.Join(strings.Fields(strings.TrimSpace(str)), " ")
 }
 
