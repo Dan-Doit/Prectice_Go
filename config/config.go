@@ -17,9 +17,9 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-type ClarinetConfig struct {
-	PiccoloConfig *goconf.Section
-	UserConfig    *goconf.Section
+type ClientConfig struct {
+	DataConfig *goconf.Section
+	UserConfig *goconf.Section
 }
 
 var configLocation = "/etc/hcc/clarinet/client.conf"
