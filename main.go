@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -10,11 +11,22 @@ import (
 
 const FILENAME string = "jobs.csv"
 
+type user struct {
+	name string
+	age  int
+}
+
+var User user
+
 func main() {
-	e := echo.New()
-	e.GET("/", handleHome)
-	e.POST("/scrapper", handleScrape)
-	e.Logger.Fatal(e.Start(":1323"))
+	User = user{}
+	User.age = 29
+	User.name = "dan"
+	fmt.Println(User)
+	// e := echo.New()
+	// e.GET("/", handleHome)
+	// e.POST("/scrapper", handleScrape)
+	// e.Logger.Fatal(e.Start(":1323"))
 }
 
 func handleHome(c echo.Context) error {
