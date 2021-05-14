@@ -1,6 +1,6 @@
 #/usr/bin/env bash
 
-_mybash_completions()
+_ali_completions()
 {
     op_command="obo gopro forme"
     op_obo="oboe admin"
@@ -20,4 +20,4 @@ _mybash_completions()
     fi
 }
 
-complete -F _mybash_completions mybash
+complete -F _ali_completions mybash
