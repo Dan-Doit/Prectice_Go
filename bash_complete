@@ -1,0 +1,23 @@
+#/usr/bin/env bash
+
+_mybash_completions()
+{
+    op_command="obo gopro forme"
+    op_obo="oboe admin"
+    op_gopro="go project"
+    op_forme="project forme"
+
+    if [["${COMP_CWORD}" == "1"]];then
+        COMPREPLY=($(compgen -W "${op_command}" "${COMP_WORDS[1]}"))
+    elif [["${COMP_CWORD}" == "2"]];then
+        if [["${COMP_CWORDS[COMP_CWORD-1]}" == "obo"]];then
+            COMPREPLY=($(compgen -W "${op_obo}" "${COMP_WORDS[2]}"))
+        elif [["${COMP_CWORDS[COMP_CWORD-1]}" == "gopro"]];then
+            COMPREPLY=($(compgen -W "${op_gopro}" "${COMP_WORDS[2]}"))
+        elif [["${COMP_CWORDS[COMP_CWORD-1]}" == "forme"]];then
+            COMPREPLY=($(compgen -W "${op_forme}" "${COMP_WORDS[2]}"))
+        fi
+    fi
+}
+
+complete -F _mybash_completions mybash
